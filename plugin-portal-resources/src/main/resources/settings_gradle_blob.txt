@@ -1,0 +1,27 @@
+buildscript {
+  repositories {
+      ivy {
+        url "${System.getProperty("user.home")}/local-repo"
+        layout 'pattern', {
+          ivy '[organisation]/[module]/[revision]/[module]-[revision].ivy'
+          artifact '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
+          m2compatible = true
+        }
+      }
+      ivy {
+          url "http://dev-artifactory.corp.linkedin.com:8081/artifactory/release"
+          layout 'pattern', {
+            ivy '[organisation]/[module]/[revision]/[module]-[revision].ivy'
+            artifact '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
+            m2compatible = true
+          }
+        }
+    }
+    dependencies {
+      classpath 'com.linkedin.gradle.portal:plugin-portal-plugin:+'
+    }
+}
+
+gradle.getStartParameter().getProjectProperties()['plugin.portal.host'] = 'http://localhost:8080'
+
+apply plugin: com.linkedin.portal.plugin.ConfigurePluginRepositories

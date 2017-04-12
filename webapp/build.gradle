@@ -1,0 +1,22 @@
+plugins {
+    id "org.springframework.boot" version "1.5.2.RELEASE"
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile project(':settings-plugin-generator')
+    compile project(':rest-models')
+    compile project(':plugin-portal-resources')
+
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-jetty:1.5.2.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-actuator:1.5.2.RELEASE")
+
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE'
+
+    compile 'com.h2database:h2:1.4.193'
+}

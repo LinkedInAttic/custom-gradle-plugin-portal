@@ -1,0 +1,39 @@
+allprojects {
+  apply plugin: 'java'
+  apply plugin: 'idea'
+
+  if (project.path != ':') {
+    buildDir = new File(rootDir, 'build/' + project.path.replace(':', '-').substring(1))
+  } else {
+    buildDir = new File(rootDir, 'build/' + project.name)
+  }
+
+
+  group = 'com.linkedin.gradle.portal'
+  version = '0.0.1'
+  
+  repositories {
+    mavenCentral()
+  }
+}
+
+subprojects {
+  apply plugin: 'ivy-publish'
+  publishing {
+    publications {
+      ivyJava(IvyPublication) {
+        from components.java
+      }
+    }
+    repositories {
+      ivy {
+        url "${System.getProperty("user.home")}/local-repo"
+        layout('pattern') {
+          ivy "[organisation]/[module]/[revision]/[module]-[revision].ivy"
+          artifact "[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+          m2compatible true
+        }
+      }
+    }
+  }
+}

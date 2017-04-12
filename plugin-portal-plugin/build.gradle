@@ -1,0 +1,26 @@
+plugins {
+  id 'com.github.johnrengelman.shadow' version '1.2.4'
+  id 'java-gradle-plugin'
+}
+
+dependencies {
+  compile gradleApi()
+  compile project(':rest-models')
+
+  compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.2'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4'
+}
+
+shadowJar {
+  relocate 'org.apache', 'shadow.portal.org.apache'
+  relocate 'com.fasterxml', 'shadow.portal.com.fasterxml'
+}
+
+gradlePlugin {
+  plugins {
+    configurePluginRepositories {
+      implementationClass = "com.linkedin.portal.plugin.ConfigurePluginRepositories"
+      id = "com.linkedin.plugin.configure-plugin-repos"
+    }
+  }
+}
