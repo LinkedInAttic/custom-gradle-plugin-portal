@@ -22,6 +22,6 @@ buildscript {
     }
 }
 
-gradle.getStartParameter().getProjectProperties()['plugin.portal.host'] = 'http://localhost:8080'
+gradle.getStartParameter().getProjectProperties()['plugin.portal.host'] = '[# th:utext="${path}" /]'
 
 apply plugin: com.linkedin.portal.plugin.ConfigurePluginRepositories

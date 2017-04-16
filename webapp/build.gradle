@@ -15,8 +15,9 @@ dependencies {
     }
     compile("org.springframework.boot:spring-boot-starter-jetty:1.5.2.RELEASE")
     compile("org.springframework.boot:spring-boot-starter-actuator:1.5.2.RELEASE")
-
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE'
+    compile('org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE')
 
     compile 'com.h2database:h2:1.4.193'
 }
+
+ext['thymeleaf.version'] = '3.0.5.RELEASE'

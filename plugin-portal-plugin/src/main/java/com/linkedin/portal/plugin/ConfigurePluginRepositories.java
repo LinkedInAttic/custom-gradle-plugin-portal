@@ -1,6 +1,7 @@
 package com.linkedin.portal.plugin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.linkedin.portal.model.IvyLayout;
 import com.linkedin.portal.model.PluginIdContainer;
 import com.linkedin.portal.model.PluginManifest;
 import com.linkedin.portal.model.PluginVersion;
@@ -10,27 +11,34 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
+import org.gradle.api.artifacts.repositories.IvyPatternRepositoryLayout;
 import org.gradle.api.initialization.Settings;
 import org.gradle.plugin.management.PluginResolutionStrategy;
+import org.gradle.plugin.repository.IvyPluginRepository;
 import org.gradle.plugin.repository.PluginRepositoriesSpec;
 import org.gradle.plugin.use.PluginId;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.HashMap;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 
 public class ConfigurePluginRepositories implements Plugin<Settings> {
+
+
     @Override
     public void apply(Settings settings) {
         String pluginHost = getPortalHost(settings);
 
         PluginManifest pluginManifest = getAvailablePlugins(pluginHost);
 
-
-        configureKnownPlugins(settings.getPluginManagement().getResolutionStrategy(), pluginManifest.getPlugins());
-        configureRepositories(settings.getPluginManagement().getRepositories(), pluginManifest.getRepos());
+        try {
+            configureKnownPlugins(settings.getPluginManagement().getResolutionStrategy(), pluginManifest.getPlugins());
+            configureRepositories(settings.getPluginManagement().getRepositories(), pluginManifest.getRepos());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void configureKnownPlugins(PluginResolutionStrategy resolutionStrategy, Map<String, PluginIdContainer> plugins) {
@@ -39,8 +47,6 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
             String requestedVersion = details.getRequested().getVersion();
 
             System.out.println("requested version: " + requestedVersion);
-
-
 
             if (plugins.containsKey(id.getId())) {
 
@@ -55,7 +61,7 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
         });
     }
 
-    private void configureRepositories(PluginRepositoriesSpec pluginRepositories, List<RepositoryDefinitions> repos) {
+    private void configureRepositories(PluginRepositoriesSpec pluginRepositories, List<RepositoryDefinitions> repos) throws NoSuchFieldException, IllegalAccessException, MalformedURLException {
         for (RepositoryDefinitions repositoryDefinitions : repos) {
 
             if (repositoryDefinitions.getType() == RepositoryType.GRADLE_PORTAL) {
@@ -63,17 +69,18 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
             } else if (repositoryDefinitions.getType() == RepositoryType.MAVEN) {
                 pluginRepositories.maven(repo -> repo.setUrl(repositoryDefinitions.getUrl()));
             } else if (repositoryDefinitions.getType() == RepositoryType.IVY) {
-                pluginRepositories.ivy(ivy -> {
-                    ivy.setUrl(repositoryDefinitions.getUrl());
+                pluginRepositories.ivy(repo -> {
+                    repo.setUrl(repositoryDefinitions.getUrl());
+                    if (repositoryDefinitions.getIvyLayout() != null) {
+                        repo.layout("pattern", config -> {
+                            IvyLayout ivyLayout = repositoryDefinitions.getIvyLayout();
+                            IvyPatternRepositoryLayout layout = (IvyPatternRepositoryLayout) config;
+                            layout.setM2compatible(ivyLayout.isM2compatible());
+                            layout.ivy(ivyLayout.getIvy());
+                            layout.artifact(ivyLayout.getArtifact());
 
-//                    IvyLayout ivyLayout = repositoryDefinitions.getIvyLayout();
-//                    if (ivyLayout != null) {
-//                        ((IvyArtifactRepository) ivy).layout("pattern", layout -> {
-//                            ((IvyPatternRepositoryLayout) layout).ivy(ivyLayout.getIvy());
-//                            ((IvyPatternRepositoryLayout) layout).artifact(ivyLayout.getArtifact());
-//                            ((IvyPatternRepositoryLayout) layout).setM2compatible(ivyLayout.isM2compatible());
-//                        });
-//                    }
+                        });
+                    }
                 });
             }
         }

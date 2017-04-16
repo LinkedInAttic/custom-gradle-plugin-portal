@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequestMapping("/api/v1/repository")
+@RequestMapping("/api/v1/manifest/repository")
 public class RepositoryResource {
 
     @Autowired

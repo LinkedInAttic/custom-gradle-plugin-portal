@@ -14,7 +14,11 @@ dependencies {
     compile 'org.springframework:spring-webmvc:4.2.8.RELEASE'
     compile 'org.springframework.data:spring-data-jpa:1.9.5.RELEASE'
     compile 'org.springframework:spring-jdbc:4.2.8.RELEASE'
+    compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.5.RELEASE'
+    compile group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.5.RELEASE'
     compile 'org.hibernate:hibernate-core:4.3.11.Final'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile project(":rest-models")
+
+    compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
 }

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequestMapping("/api/v1/plugins")
+@RequestMapping("/api/v1/manifest/plugins")
 public class PluginsResource {
 
     @Autowired
