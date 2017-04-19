@@ -14,7 +14,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.artifacts.repositories.IvyPatternRepositoryLayout;
 import org.gradle.api.initialization.Settings;
 import org.gradle.plugin.management.PluginResolutionStrategy;
-import org.gradle.plugin.repository.IvyPluginRepository;
 import org.gradle.plugin.repository.PluginRepositoriesSpec;
 import org.gradle.plugin.use.PluginId;
 
