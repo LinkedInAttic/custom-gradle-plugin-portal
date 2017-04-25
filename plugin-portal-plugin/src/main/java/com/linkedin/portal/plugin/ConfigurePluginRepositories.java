@@ -7,12 +7,15 @@ import com.linkedin.portal.model.PluginManifest;
 import com.linkedin.portal.model.PluginVersion;
 import com.linkedin.portal.model.RepositoryDefinitions;
 import com.linkedin.portal.model.RepositoryType;
+import groovy.util.Eval;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.artifacts.repositories.IvyPatternRepositoryLayout;
 import org.gradle.api.initialization.Settings;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.plugin.management.PluginResolutionStrategy;
 import org.gradle.plugin.repository.PluginRepositoriesSpec;
 import org.gradle.plugin.use.PluginId;
@@ -25,6 +28,7 @@ import java.util.Map;
 
 public class ConfigurePluginRepositories implements Plugin<Settings> {
 
+    private static final Logger LOG = Logging.getLogger(ConfigurePluginRepositories.class);
 
     @Override
     public void apply(Settings settings) {
@@ -45,10 +49,9 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
             PluginId id = details.getRequested().getId();
             String requestedVersion = details.getRequested().getVersion();
 
-            System.out.println("requested version: " + requestedVersion);
+            LOG.info("Plugin {} requested version {}", id.getName(), requestedVersion);
 
             if (plugins.containsKey(id.getId())) {
-
                 PluginIdContainer pluginIdContainer = plugins.get(id.getId());
                 if (pluginIdContainer.getVersions().containsKey(requestedVersion)) {
                     PluginVersion pluginVersion = pluginIdContainer.getVersions().get(requestedVersion);
@@ -66,10 +69,10 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
             if (repositoryDefinitions.getType() == RepositoryType.GRADLE_PORTAL) {
                 pluginRepositories.gradlePluginPortal();
             } else if (repositoryDefinitions.getType() == RepositoryType.MAVEN) {
-                pluginRepositories.maven(repo -> repo.setUrl(repositoryDefinitions.getUrl()));
+                pluginRepositories.maven(repo -> repo.setUrl(evaluateRepositoryUrl(repositoryDefinitions)));
             } else if (repositoryDefinitions.getType() == RepositoryType.IVY) {
                 pluginRepositories.ivy(repo -> {
-                    repo.setUrl(repositoryDefinitions.getUrl());
+                    repo.setUrl(evaluateRepositoryUrl(repositoryDefinitions));
                     if (repositoryDefinitions.getIvyLayout() != null) {
                         repo.layout("pattern", config -> {
                             IvyLayout ivyLayout = repositoryDefinitions.getIvyLayout();
@@ -77,12 +80,19 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
                             layout.setM2compatible(ivyLayout.isM2compatible());
                             layout.ivy(ivyLayout.getIvy());
                             layout.artifact(ivyLayout.getArtifact());
-
                         });
                     }
                 });
             }
         }
+    }
+
+    private String evaluateRepositoryUrl(RepositoryDefinitions repositoryDefinitions) {
+        String repositoryDefinitionsUrl = repositoryDefinitions.getUrl();
+        if (repositoryDefinitionsUrl != null) {
+            repositoryDefinitionsUrl = (String) Eval.me(repositoryDefinitionsUrl);
+        }
+        return repositoryDefinitionsUrl;
     }
 
     private PluginManifest getAvailablePlugins(String pluginHost) {

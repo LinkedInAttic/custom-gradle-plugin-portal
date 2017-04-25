@@ -1,0 +1,3 @@
+maven {
+    url '[# th:utext="${path}" /]'
+}

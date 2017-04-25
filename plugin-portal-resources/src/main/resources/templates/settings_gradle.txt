@@ -1,21 +1,8 @@
 buildscript {
   repositories {
-      ivy {
-        url "${System.getProperty("user.home")}/local-repo"
-        layout 'pattern', {
-          ivy '[organisation]/[module]/[revision]/[module]-[revision].ivy'
-          artifact '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
-          m2compatible = true
-        }
-      }
-      ivy {
-          url "http://dev-artifactory.corp.linkedin.com:8081/artifactory/release"
-          layout 'pattern', {
-            ivy '[organisation]/[module]/[revision]/[module]-[revision].ivy'
-            artifact '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
-            m2compatible = true
-          }
-        }
+      [# th:each="repo : ${repos}"]
+[(${repo})]
+      [/]
     }
     dependencies {
       classpath 'com.linkedin.gradle.portal:plugin-portal-plugin:+'
