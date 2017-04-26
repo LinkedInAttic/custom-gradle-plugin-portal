@@ -67,6 +67,7 @@ When Gradle exits the initialization phase, the `plugins {}` will then be able t
 
 ## What Endpoints Exist?
 
+```
 | Method |                 Endpoint                | Auth Required |
 |:------:|:---------------------------------------:|:-------------:|
 |   GET  |             /api/v1/manifest            |       NO      |
@@ -82,3 +83,4 @@ When Gradle exits the initialization phase, the `plugins {}` will then be able t
 |  POST  |       /api/v1/manifest/repository       |       YES     |
 |   GET  |     /api/v1/manifest/repository/{id}    |       NO      |
 | DELETE |     /api/v1/manifest/repository/{id}    |       YES     |
+```
