@@ -3,7 +3,7 @@ package com.linkedin.portal.resources.transform;
 import com.linkedin.portal.model.IvyLayout;
 import com.linkedin.portal.model.PluginIdContainer;
 import com.linkedin.portal.model.PluginVersion;
-import com.linkedin.portal.model.RepositoryDefinitions;
+import com.linkedin.portal.model.RepositoryDefinition;
 import com.linkedin.portal.model.RepositoryType;
 import com.linkedin.portal.resources.dao.entity.PluginEntity;
 import com.linkedin.portal.resources.dao.entity.PluginVersionEntity;
@@ -50,7 +50,7 @@ public class Transformer {
                 dependencyNotation.get("configuration"), dependencyNotation.get("classifier"));
     }
 
-    public static RepositoryEntity fromRepositoryDefinitions(RepositoryDefinitions definitions) {
+    public static RepositoryEntity fromRepositoryDefinitions(RepositoryDefinition definitions) {
         String type = definitions.getType().name();
         String url = definitions.getUrl();
         boolean m2compatable = false;
@@ -66,11 +66,11 @@ public class Transformer {
         return new RepositoryEntity(type, url, ivy, artifact, m2compatable);
     }
 
-    public static RepositoryDefinitions fromRepositoryEntity(RepositoryEntity it) {
+    public static RepositoryDefinition fromRepositoryEntity(RepositoryEntity it) {
         IvyLayout layout = null;
         if (it.getIvy() != null && it.getArtifact() != null) {
             layout = new IvyLayout(it.getIvy(), it.getArtifact(), it.isM2Compatible());
         }
-        return new RepositoryDefinitions(RepositoryType.valueOf(it.getType()), it.getUrl(), layout);
+        return new RepositoryDefinition(RepositoryType.valueOf(it.getType()), it.getUrl(), layout);
     }
 }

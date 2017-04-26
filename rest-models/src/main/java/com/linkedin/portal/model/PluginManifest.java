@@ -11,10 +11,10 @@ public class PluginManifest {
     private static final String REPOS = "repos";
 
     private final Map<String, PluginIdContainer> plugins;
-    private final List<RepositoryDefinitions> repos;
+    private final List<RepositoryDefinition> repos;
 
     public PluginManifest(@JsonProperty(value = PLUGINS, required = true) Map<String, PluginIdContainer> plugins,
-                          @JsonProperty(value = REPOS, required = true) List<RepositoryDefinitions> repos) {
+                          @JsonProperty(value = REPOS, required = true) List<RepositoryDefinition> repos) {
         this.plugins = plugins;
         this.repos = repos;
     }
@@ -25,7 +25,7 @@ public class PluginManifest {
     }
 
     @JsonProperty(REPOS)
-    public List<RepositoryDefinitions> getRepos() {
+    public List<RepositoryDefinition> getRepos() {
         return repos;
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RepositoryDefinitions {
+public class RepositoryDefinition {
 
     private static final String TYPE = "type";
     private static final String URL = "url";
@@ -16,15 +16,15 @@ public class RepositoryDefinitions {
     private final IvyLayout ivyLayout;
 
     @JsonCreator
-    public RepositoryDefinitions(@JsonProperty(value = TYPE, required = true) RepositoryType type,
-                                 @JsonProperty(value = URL) String url,
-                                 @JsonProperty(LAYOUT) IvyLayout ivyLayout) {
+    public RepositoryDefinition(@JsonProperty(value = TYPE, required = true) RepositoryType type,
+                                @JsonProperty(value = URL) String url,
+                                @JsonProperty(LAYOUT) IvyLayout ivyLayout) {
         this.type = type;
         this.url = url;
         this.ivyLayout = ivyLayout;
     }
 
-    public RepositoryDefinitions(RepositoryType type, String url) {
+    public RepositoryDefinition(RepositoryType type, String url) {
         this(type, url, null);
     }
 

@@ -63,7 +63,7 @@ public class PluginsResource {
         return ResponseEntity.created(uri).build();
     }
 
-    @RequestMapping("/{id:.+}")
+    @RequestMapping(value = "/{id:.+}", method = RequestMethod.GET)
     public ResponseEntity<PluginIdContainer> getPlugin(@PathVariable("id") String id) {
         PluginEntity plugin = pluginRepository.findByPluginNameEquals(id);
 

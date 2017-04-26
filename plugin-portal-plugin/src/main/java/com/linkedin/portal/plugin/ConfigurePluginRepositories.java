@@ -5,7 +5,7 @@ import com.linkedin.portal.model.IvyLayout;
 import com.linkedin.portal.model.PluginIdContainer;
 import com.linkedin.portal.model.PluginManifest;
 import com.linkedin.portal.model.PluginVersion;
-import com.linkedin.portal.model.RepositoryDefinitions;
+import com.linkedin.portal.model.RepositoryDefinition;
 import com.linkedin.portal.model.RepositoryType;
 import groovy.util.Eval;
 import org.apache.http.client.fluent.Request;
@@ -65,21 +65,25 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
         });
     }
 
-    private void configureRepositories(PluginRepositoriesSpec pluginRepositories, List<RepositoryDefinitions> repos) throws NoSuchFieldException, IllegalAccessException, MalformedURLException {
-        for (RepositoryDefinitions repositoryDefinitions : repos) {
+    /**
+     * Add all the defined repositories into Gradle to get settings.
+     * @throws MalformedURLException when the URL is malformed.
+     */
+    private void configureRepositories(PluginRepositoriesSpec pluginRepositories, List<RepositoryDefinition> repos) throws MalformedURLException {
+        for (RepositoryDefinition repositoryDefinition : repos) {
 
-            if (repositoryDefinitions.getType() == RepositoryType.GRADLE_PORTAL) {
+            if (repositoryDefinition.getType() == RepositoryType.GRADLE_PORTAL) {
                 pluginRepositories.gradlePluginPortal();
 
-            } else if (repositoryDefinitions.getType() == RepositoryType.MAVEN) {
-                pluginRepositories.maven(repo -> repo.setUrl(evaluateRepositoryUrl(repositoryDefinitions)));
+            } else if (repositoryDefinition.getType() == RepositoryType.MAVEN) {
+                pluginRepositories.maven(repo -> repo.setUrl(evaluateRepositoryUrl(repositoryDefinition)));
 
-            } else if (repositoryDefinitions.getType() == RepositoryType.IVY) {
+            } else if (repositoryDefinition.getType() == RepositoryType.IVY) {
                 pluginRepositories.ivy(repo -> {
-                    repo.setUrl(evaluateRepositoryUrl(repositoryDefinitions));
-                    if (repositoryDefinitions.getIvyLayout() != null) {
+                    repo.setUrl(evaluateRepositoryUrl(repositoryDefinition));
+                    if (repositoryDefinition.getIvyLayout() != null) {
                         repo.layout("pattern", config -> {
-                            IvyLayout ivyLayout = repositoryDefinitions.getIvyLayout();
+                            IvyLayout ivyLayout = repositoryDefinition.getIvyLayout();
                             IvyPatternRepositoryLayout layout = (IvyPatternRepositoryLayout) config;
                             layout.setM2compatible(ivyLayout.isM2compatible());
                             layout.ivy(ivyLayout.getIvy());
@@ -91,8 +95,13 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
         }
     }
 
-    private String evaluateRepositoryUrl(RepositoryDefinitions repositoryDefinitions) {
-        String repositoryDefinitionsUrl = repositoryDefinitions.getUrl();
+    /**
+     * Given a repositoryDefinition, evaluate any expression that may be in the String.
+     * @param repositoryDefinition definition
+     * @return String of the evaluated expression or null.
+     */
+    private String evaluateRepositoryUrl(RepositoryDefinition repositoryDefinition) {
+        String repositoryDefinitionsUrl = repositoryDefinition.getUrl();
         if (repositoryDefinitionsUrl != null) {
             repositoryDefinitionsUrl = Eval.me("\"" + repositoryDefinitionsUrl + "\"").toString();
         }
@@ -100,6 +109,9 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
         return repositoryDefinitionsUrl;
     }
 
+    /**
+     * Download the manifest, store it into a local cache, then parse it.
+     */
     private PluginManifest getAvailablePlugins(Settings settings, String pluginHost) {
         File pluginManifest = new File(settings.getRootDir(), ".gradle/plugin-manifest");
         String pluginJson = null;
@@ -142,6 +154,9 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
         }
     }
 
+    /**
+     * @return The plugin portal host.
+     */
     private String getPortalHost(Settings settings) {
         Map<String, String> projectProperties = settings.getGradle().getStartParameter().getProjectProperties();
 
