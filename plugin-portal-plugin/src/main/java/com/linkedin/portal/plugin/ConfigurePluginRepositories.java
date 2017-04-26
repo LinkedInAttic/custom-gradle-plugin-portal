@@ -20,9 +20,11 @@ import org.gradle.plugin.management.PluginResolutionStrategy;
 import org.gradle.plugin.repository.PluginRepositoriesSpec;
 import org.gradle.plugin.use.PluginId;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +36,7 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
     public void apply(Settings settings) {
         String pluginHost = getPortalHost(settings);
 
-        PluginManifest pluginManifest = getAvailablePlugins(pluginHost);
+        PluginManifest pluginManifest = getAvailablePlugins(settings, pluginHost);
 
         try {
             configureKnownPlugins(settings.getPluginManagement().getResolutionStrategy(), pluginManifest.getPlugins());
@@ -68,8 +70,10 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
 
             if (repositoryDefinitions.getType() == RepositoryType.GRADLE_PORTAL) {
                 pluginRepositories.gradlePluginPortal();
+
             } else if (repositoryDefinitions.getType() == RepositoryType.MAVEN) {
                 pluginRepositories.maven(repo -> repo.setUrl(evaluateRepositoryUrl(repositoryDefinitions)));
+
             } else if (repositoryDefinitions.getType() == RepositoryType.IVY) {
                 pluginRepositories.ivy(repo -> {
                     repo.setUrl(evaluateRepositoryUrl(repositoryDefinitions));
@@ -96,17 +100,45 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
         return repositoryDefinitionsUrl;
     }
 
-    private PluginManifest getAvailablePlugins(String pluginHost) {
-        try {
-            Response response = Request.Get(pluginHost + "/api/v1/manifest")
-                    .connectTimeout(1000)
-                    .socketTimeout(1000)
-                    .execute();
+    private PluginManifest getAvailablePlugins(Settings settings, String pluginHost) {
+        File pluginManifest = new File(settings.getRootDir(), ".gradle/plugin-manifest");
+        String pluginJson = null;
+        if (pluginManifest.exists()) {
+            try {
+                pluginJson = new String(Files.readAllBytes(pluginManifest.toPath()), Charset.defaultCharset());
+            } catch (IOException e) {
+                LOG.warn("Unable to read {}", pluginManifest);
+            }
+        }
 
-            String pluginJson = response.returnContent().asString();
+        if (!settings.getStartParameter().isOffline()) {
+            try {
+                Response response = Request.Get(pluginHost + "/api/v1/manifest")
+                        .connectTimeout(1000)
+                        .socketTimeout(1000)
+                        .execute();
+
+                pluginJson = response.returnContent().asString();
+
+                try {
+                    Files.write(pluginManifest.toPath(), pluginJson.getBytes());
+                } catch (IOException e) {
+                    LOG.info("Unable to write cache");
+                }
+
+            } catch (IOException e) {
+                LOG.warn("Unable to communicate with plugin portal, falling back to cache");
+            }
+        }
+
+        if (pluginJson == null) {
+            throw new GradleException("Unable to retrieve plugin manifests");
+        }
+
+        try {
             return new ObjectMapper().readValue(pluginJson, PluginManifest.class);
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new GradleException("Unable to parse json", e);
         }
     }
 
