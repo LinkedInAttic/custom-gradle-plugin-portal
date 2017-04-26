@@ -31,6 +31,10 @@ public class RepositoryEntity {
     public RepositoryEntity() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getType() {
         return type;
     }

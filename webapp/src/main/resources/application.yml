@@ -1,3 +1,7 @@
 logging:
   level:
     com.linkedin: DEBUG
+
+user:
+  login: user
+  password: password

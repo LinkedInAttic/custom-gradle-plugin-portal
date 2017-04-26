@@ -90,8 +90,9 @@ public class ConfigurePluginRepositories implements Plugin<Settings> {
     private String evaluateRepositoryUrl(RepositoryDefinitions repositoryDefinitions) {
         String repositoryDefinitionsUrl = repositoryDefinitions.getUrl();
         if (repositoryDefinitionsUrl != null) {
-            repositoryDefinitionsUrl = (String) Eval.me(repositoryDefinitionsUrl);
+            repositoryDefinitionsUrl = Eval.me("\"" + repositoryDefinitionsUrl + "\"").toString();
         }
+
         return repositoryDefinitionsUrl;
     }
 

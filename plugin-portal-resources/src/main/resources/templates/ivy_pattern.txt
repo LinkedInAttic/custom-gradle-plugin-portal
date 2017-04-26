@@ -1,5 +1,5 @@
 ivy {
-    url '[# th:utext="${path}" /]'
+    url "[# th:utext="${path}" /]"
     layout 'pattern', {
       ivy '[# th:utext="${ivyPath}" /]'
       artifact '[# th:utext="${artifactPath}" /]'

@@ -1,5 +1,6 @@
 package com.linkedin.portal.resources.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,9 +19,10 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @EnableJpaRepositories("com.linkedin.portal.resources.dao")
 public class ResourceConfig {
 
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    @Autowired
+    public ResourceConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

@@ -43,6 +43,10 @@ public class PluginsResource {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> createPlugin(@RequestBody PluginIdContainer pluginIdContainer) {
+        if (null != pluginRepository.findByPluginNameEquals(pluginIdContainer.getPluginId())) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
         PluginEntity pluginEntity = new PluginEntity(pluginIdContainer.getPluginId(), pluginIdContainer.getDefaultVersion(), new ArrayList<>());
         pluginEntity = pluginRepository.save(pluginEntity);
 
@@ -114,6 +118,10 @@ public class PluginsResource {
 
         if (null == plugin) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (null != versionRepository.findByPluginEntityAndPluginVersionEquals(plugin, version.getVersion())) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
         PluginVersionEntity versionEntity = Transformer.fromPluginVersion(plugin, version);

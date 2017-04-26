@@ -8,7 +8,6 @@ allprojects {
     buildDir = new File(rootDir, 'build/' + project.name)
   }
 
-
   group = 'com.linkedin.gradle.portal'
   version = '0.0.1'
   
@@ -19,6 +18,10 @@ allprojects {
 
 subprojects {
   apply plugin: 'ivy-publish'
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
   publishing {
     publications {
       ivyJava(IvyPublication) {
