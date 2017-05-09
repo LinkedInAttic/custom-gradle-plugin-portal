@@ -96,3 +96,8 @@ When Gradle exits the initialization phase, the `plugins {}` will then be able t
 |   GET  |     /api/v1/manifest/repository/{id}    |       NO      |
 | DELETE |     /api/v1/manifest/repository/{id}    |       YES     |
 ```
+
+## Security
+We have enabled security by default. Since every organization will have different security requirements we **highly**
+recommend that you update the authentication system used. Spring has great integration with LDAP, OAuth, database 
+password. Please change from the BASIC auth with a pre-defined username and password to keep your data secure.
