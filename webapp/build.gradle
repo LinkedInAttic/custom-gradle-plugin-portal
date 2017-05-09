@@ -1,5 +1,5 @@
 plugins {
-    id "org.springframework.boot" version "1.5.2.RELEASE"
+    id "org.springframework.boot" version "1.5.3.RELEASE"
 }
 
 dependencies {
@@ -17,5 +17,7 @@ dependencies {
     compile 'com.h2database:h2:1.4.193'
     compile 'com.zaxxer:HikariCP:2.6.1'
 }
+
+ext.mainClassName = 'com.linkedin.portal.webapp.Application'
 
 ext['thymeleaf.version'] = '3.0.5.RELEASE'
