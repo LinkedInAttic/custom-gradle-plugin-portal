@@ -1,5 +1,21 @@
+plugins {
+  id "com.github.hierynomus.license" version "0.14.0" apply false
+  id "com.github.jk1.dependency-license-report" version "0.3.11" apply false
+}
+
 allprojects {
   apply plugin: 'idea'
+  apply plugin: 'java'
+  apply plugin: "com.github.jk1.dependency-license-report"
+  apply plugin: 'com.github.hierynomus.license'
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
+  license {
+    header rootProject.file('codequality/HEADER')
+    exclude '**/*.template'
+  }
 
   if (project.path != ':') {
     buildDir = new File(rootDir, 'build/' + project.path.replace(':', '-').substring(1))
@@ -17,9 +33,6 @@ allprojects {
 
 subprojects {
   apply plugin: 'ivy-publish'
-
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
 
   publishing {
     publications {
