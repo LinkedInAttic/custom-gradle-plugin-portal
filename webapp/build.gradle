@@ -16,6 +16,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-security:1.5.2.RELEASE')
 
     compile 'com.h2database:h2:1.4.193'
+    compile 'com.zaxxer:HikariCP:2.6.1'
 }
 
 ext['thymeleaf.version'] = '3.0.5.RELEASE'

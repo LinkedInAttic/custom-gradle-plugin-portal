@@ -2,6 +2,10 @@ logging:
   level:
     com.linkedin: DEBUG
 
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+
 user:
   login: user
   password: password
