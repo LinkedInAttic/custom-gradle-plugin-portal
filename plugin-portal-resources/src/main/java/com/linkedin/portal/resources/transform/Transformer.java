@@ -13,11 +13,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Utility to convert between database and rest models.
+ */
 public class Transformer {
     private Transformer() {
         //NOOP
     }
 
+    /**
+     * Convert a database model to a rest model
+     * @param pluginEntity a database model
+     * @return a rest model
+     */
     public static PluginIdContainer fromPluginEntity(PluginEntity pluginEntity) {
         Map<String, PluginVersion> versionMap = pluginEntity.getVersions().stream()
                 .map(Transformer::fromPluginVersionEntity).collect(Collectors.toMap(PluginVersion::getVersion, item -> item));
@@ -25,6 +33,11 @@ public class Transformer {
         return new PluginIdContainer(versionMap, pluginEntity.getPluginName(), pluginEntity.getLatestVersion());
     }
 
+    /**
+     * Convert database model to a rest model
+     * @param entity a database model
+     * @return a rest model
+     */
     public static PluginVersion fromPluginVersionEntity(PluginVersionEntity entity) {
 
         Map<String, String> dependencyNotation = new HashMap<>();
@@ -43,6 +56,12 @@ public class Transformer {
         return new PluginVersion(entity.getPluginVersion(), dependencyNotation);
     }
 
+    /**
+     * Convert a database entries to a rest model.
+     * @param pluginEntity Plugin Data Model
+     * @param pluginVersion Plugin Version Model
+     * @return a rest model
+     */
     public static PluginVersionEntity fromPluginVersion(PluginEntity pluginEntity, PluginVersion pluginVersion) {
         Map<String, String> dependencyNotation = pluginVersion.getDependencyNotation();
         return new PluginVersionEntity(pluginEntity, pluginVersion.getVersion(), dependencyNotation.get("group"),
@@ -50,6 +69,11 @@ public class Transformer {
                 dependencyNotation.get("configuration"), dependencyNotation.get("classifier"));
     }
 
+    /**
+     * Convert {@link RepositoryDefinition} to {@link RepositoryEntity}
+     * @param definitions a rest model
+     * @return a database model
+     */
     public static RepositoryEntity fromRepositoryDefinitions(RepositoryDefinition definitions) {
         String type = definitions.getType().name();
         String url = definitions.getUrl();
@@ -66,11 +90,16 @@ public class Transformer {
         return new RepositoryEntity(type, url, ivy, artifact, m2compatable);
     }
 
-    public static RepositoryDefinition fromRepositoryEntity(RepositoryEntity it) {
+    /**
+     * Convert {@link RepositoryEntity} to {@link RepositoryDefinition}
+     * @param repositoryEntity a database model
+     * @return a rest model
+     */
+    public static RepositoryDefinition fromRepositoryEntity(RepositoryEntity repositoryEntity) {
         IvyLayout layout = null;
-        if (it.getIvy() != null && it.getArtifact() != null) {
-            layout = new IvyLayout(it.getIvy(), it.getArtifact(), it.isM2Compatible());
+        if (repositoryEntity.getIvy() != null && repositoryEntity.getArtifact() != null) {
+            layout = new IvyLayout(repositoryEntity.getIvy(), repositoryEntity.getArtifact(), repositoryEntity.isM2Compatible());
         }
-        return new RepositoryDefinition(RepositoryType.valueOf(it.getType()), it.getUrl(), layout);
+        return new RepositoryDefinition(RepositoryType.valueOf(repositoryEntity.getType()), repositoryEntity.getUrl(), layout);
     }
 }

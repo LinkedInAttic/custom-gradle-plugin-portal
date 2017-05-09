@@ -1,7 +1,43 @@
 plugins {
+  id 'groovy'
   id 'com.github.johnrengelman.shadow' version '1.2.4'
   id 'java-gradle-plugin'
+  id 'idea'
 }
+
+sourceSets {
+  integTest {
+    java {
+      compileClasspath += main.output + test.output
+      runtimeClasspath += main.output + test.output
+      srcDir file('src/integTest/java')
+    }
+    resources.srcDir file('src/integTest/resources')
+  }
+}
+
+configurations {
+  integTestCompile.extendsFrom testCompile
+  integTestRuntime.extendsFrom testRuntime
+  all {
+    exclude group: 'org.apache.tomcat', module: 'tomcat-jdbc'
+  }
+}
+
+def integTest = tasks.create('integTest', Test) {
+  shouldRunAfter(tasks.test)
+  testClassesDirs = sourceSets.integTest.output.getClassesDirs()
+  classpath = sourceSets.integTest.runtimeClasspath
+  reports.html.destination(file("$buildDir/reports/integration-test"))
+
+  systemProperty('plugin.jar.file', tasks.jar.archivePath.absolutePath)
+
+  doFirst {
+    systemProperty('jar.dependencies', configurations.runtime.files.join(":"))
+  }
+}
+
+tasks.check.dependsOn integTest
 
 dependencies {
   compile gradleApi()
@@ -11,6 +47,10 @@ dependencies {
   compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.2'
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
+
+  integTestCompile group: 'com.netflix.nebula', name: 'nebula-test', version: '6.0.1'
+  integTestCompile gradleTestKit()
+  integTestCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '2.6.0'
 }
 
 shadowJar {
@@ -23,6 +63,17 @@ gradlePlugin {
     configurePluginRepositories {
       implementationClass = "com.linkedin.portal.plugin.ConfigurePluginRepositories"
       id = "com.linkedin.plugin.configure-plugin-repos"
+    }
+  }
+}
+
+plugins.withType(org.gradle.plugins.ide.idea.IdeaPlugin) { // lazy as plugin not applied yet
+  idea {
+    module {
+      testSourceDirs += sourceSets.integTest.groovy.srcDirs
+      testSourceDirs += sourceSets.integTest.resources.srcDirs
+      scopes.TEST.plus.add(configurations.integTestCompile)
+      scopes.TEST.plus.add(configurations.integTestRuntime)
     }
   }
 }
