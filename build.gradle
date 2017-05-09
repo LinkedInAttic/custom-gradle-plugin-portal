@@ -14,7 +14,7 @@ allprojects {
 
   license {
     header rootProject.file('codequality/HEADER')
-    exclude '**/*.template'
+    exclude '**/*.txt'
   }
 
   if (project.path != ':') {

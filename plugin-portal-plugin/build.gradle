@@ -67,6 +67,12 @@ gradlePlugin {
   }
 }
 
+jar {
+  from(rootProject.file("CONTRIBUTING.md"))
+  from(rootProject.file("LICENSE"))
+  from(rootProject.file("NOTICE"))
+}
+
 plugins.withType(org.gradle.plugins.ide.idea.IdeaPlugin) { // lazy as plugin not applied yet
   idea {
     module {
