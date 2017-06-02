@@ -51,7 +51,8 @@ public class PluginsResource {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        PluginEntity pluginEntity = new PluginEntity(pluginIdContainer.getPluginId(), pluginIdContainer.getDefaultVersion(), new ArrayList<>());
+        PluginEntity pluginEntity = new PluginEntity(pluginIdContainer.getPluginId(), pluginIdContainer.getDefaultVersion(),
+                pluginIdContainer.getDocumentationLink(), new ArrayList<>());
         pluginEntity = pluginRepository.save(pluginEntity);
 
         for (PluginVersion pluginVersion : pluginIdContainer.getVersions().values()) {

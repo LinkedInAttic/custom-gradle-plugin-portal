@@ -25,15 +25,17 @@ public class PluginEntity {
 
     private String pluginName;
     private String latestVersion;
+    private String docLink;
 
     @OneToMany
     @Cascade({CascadeType.ALL})
     private List<PluginVersionEntity> versions;
 
-    public PluginEntity(String pluginName, String latestVersion, List<PluginVersionEntity> versions) {
+    public PluginEntity(String pluginName, String latestVersion, String docLink, List<PluginVersionEntity> versions) {
         this.pluginName = pluginName;
         this.latestVersion = latestVersion;
         this.versions = versions;
+        this.docLink = docLink;
     }
 
     public PluginEntity() {
@@ -45,6 +47,10 @@ public class PluginEntity {
 
     public String getLatestVersion() {
         return latestVersion;
+    }
+
+    public String getDocLink() {
+        return docLink;
     }
 
     public List<PluginVersionEntity> getVersions() {

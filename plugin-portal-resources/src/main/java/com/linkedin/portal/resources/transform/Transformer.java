@@ -34,7 +34,7 @@ public class Transformer {
         Map<String, PluginVersion> versionMap = pluginEntity.getVersions().stream()
                 .map(Transformer::fromPluginVersionEntity).collect(Collectors.toMap(PluginVersion::getVersion, item -> item));
 
-        return new PluginIdContainer(versionMap, pluginEntity.getPluginName(), pluginEntity.getLatestVersion());
+        return new PluginIdContainer(versionMap, pluginEntity.getPluginName(), pluginEntity.getLatestVersion(), pluginEntity.getDocLink());
     }
 
     /**
