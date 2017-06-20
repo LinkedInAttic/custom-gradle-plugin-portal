@@ -53,7 +53,7 @@ class ConfigurePluginRepositoriesTest extends Specification {
     private PluginManifest createManifest(File repoFolder) {
         Map<String, PluginIdContainer> plugins = new HashMap<>()
         def pluginVersion = new PluginVersion('1.2.3', [group: 'com', name: 'foo', version: '1.2.3'])
-        plugins['test-plugin'] = new PluginIdContainer(['1.2.3': pluginVersion], 'test-plugin', null)
+        plugins['test-plugin'] = new PluginIdContainer(['1.2.3': pluginVersion], 'test-plugin', null, null)
 
         List<RepositoryDefinition> repos = new ArrayList<>()
         repos.add(new RepositoryDefinition(RepositoryType.MAVEN, repoFolder.absolutePath))
