@@ -47,8 +47,9 @@ public class ResolutionStrategyAction implements Action<PluginResolutionStrategy
                 if (pluginIdContainer.getVersions().containsKey(requestedVersion)) {
                     PluginVersion pluginVersion = pluginIdContainer.getVersions().get(requestedVersion);
                     details.useModule(pluginVersion.getDependencyNotation());
-                } else if (null == requestedVersion) {
-                    details.useVersion(pluginIdContainer.getDefaultVersion());
+                } else if ("DEFAULT".equals(requestedVersion)) {
+                    PluginVersion pluginVersion = pluginIdContainer.getVersions().get(pluginIdContainer.getDefaultVersion());
+                    details.useModule(pluginVersion.getDependencyNotation());
                 }
             }
         });
