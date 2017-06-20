@@ -21,8 +21,8 @@ public class RepositoryDefinition {
 
     @JsonCreator
     public RepositoryDefinition(@JsonProperty(value = TYPE, required = true) RepositoryType type,
-                                @JsonProperty(value = URL) String url,
-                                @JsonProperty(LAYOUT) IvyLayout ivyLayout) {
+                                @JsonProperty(value = URL, required = true) String url,
+                                @JsonProperty(value = LAYOUT) IvyLayout ivyLayout) {
         this.type = type;
         this.url = url;
         this.ivyLayout = ivyLayout;
