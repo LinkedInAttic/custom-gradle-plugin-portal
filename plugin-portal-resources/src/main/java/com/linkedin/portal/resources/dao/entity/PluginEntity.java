@@ -56,4 +56,12 @@ public class PluginEntity {
     public List<PluginVersionEntity> getVersions() {
         return versions;
     }
+
+    public void setLatestVersion(String latestVersion) {
+        this.latestVersion = latestVersion;
+    }
+
+    public void setDocLink(String docLink) {
+        this.docLink = docLink;
+    }
 }

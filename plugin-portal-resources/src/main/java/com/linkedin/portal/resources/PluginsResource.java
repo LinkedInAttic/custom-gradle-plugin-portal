@@ -12,7 +12,9 @@ import com.linkedin.portal.resources.dao.repository.PluginRepository;
 import com.linkedin.portal.resources.dao.repository.VersionRepository;
 import com.linkedin.portal.resources.transform.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -138,5 +140,24 @@ public class PluginsResource {
                 .buildAndExpand(version.getVersion()).toUri();
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @RequestMapping(value = "/{id:.+}/defaultVersion", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<Object> setDefaultVersion(@PathVariable("id") String id, @RequestBody String body) {
+        PluginEntity plugin = pluginRepository.findByPluginNameEquals(id);
+
+        if (null == plugin) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        PluginVersionEntity entry = versionRepository.findByPluginEntityAndPluginVersionEquals(plugin, body);
+        if(entry == null) {
+            return new ResponseEntity<>("Version " + body + "doesn't exists.", HttpStatus.NOT_FOUND);
+        }
+
+        plugin.setLatestVersion(body);
+        pluginRepository.save(plugin);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
